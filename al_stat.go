@@ -1,7 +1,7 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -65,7 +65,7 @@ func (s *ALStat) String() string {
 func (s *ALStat) reportStats() {
 	for {
 		if s.mean != 0 {
-			log.Println(s)
+			fmt.Println(s)
 		}
 		s.Reset()
 		time.Sleep(alrate * time.Second)
