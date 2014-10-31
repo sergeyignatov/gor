@@ -55,6 +55,7 @@ func (i *FileInput) emit() {
 		err := i.decoder.Decode(raw)
 
 		if err != nil {
+			os.Exit(0)
 			return
 		}
 
@@ -62,8 +63,9 @@ func (i *FileInput) emit() {
 			timeDiff := raw.Timestamp - lastTime
 
 			// We can speedup or slowdown execution based on speedFactor
-			if i.speedFactor != 1 {
+			if i.speedFactor > 1 {
 				timeDiff = int64(float64(raw.Timestamp-lastTime) / i.speedFactor)
+
 			}
 
 			time.Sleep(time.Duration(timeDiff))

@@ -28,7 +28,7 @@ func main() {
 		}
 	}()
 
-	fmt.Println("Version:", VERSION)
+	//fmt.Println("Version:", VERSION)
 
 	flag.Parse()
 	InitPlugins()

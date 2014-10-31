@@ -56,7 +56,8 @@ type HTTPOutput struct {
 
 	elasticSearch *ESPlugin
 
-	queueStats *GorStat
+	queueStats   *GorStat
+	queueALStats *ALStat
 }
 
 func NewHTTPOutput(address string, headers HTTPHeaders, methods HTTPMethods, urlRegexp HTTPUrlRegexp, headerFilters HTTPHeaderFilters, headerHashFilters HTTPHeaderHashFilters, elasticSearchAddr string, outputHTTPUrlRewrite UrlRewriteMap) io.Writer {
@@ -79,6 +80,9 @@ func NewHTTPOutput(address string, headers HTTPHeaders, methods HTTPMethods, url
 	o.queue = make(chan []byte, 100)
 	if Settings.outputHTTPStats {
 		o.queueStats = NewGorStat("output_http")
+	}
+	if Settings.stats {
+		o.queueALStats = NewALStat()
 	}
 
 	o.needWorker = make(chan int, 1)
@@ -174,7 +178,7 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	request, err := ParseRequest(data)
 
 	if err != nil {
-		log.Println("Cannot parse request", string(data), err)
+		//log.Println("Cannot parse request", string(data), err)
 		return
 	}
 
@@ -202,6 +206,7 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	start := time.Now()
 	resp, err := client.Do(request)
 	stop := time.Now()
+	o.queueALStats.Write(int(stop.Sub(start) / 1e3))
 
 	// We should not count Redirect as errors
 	if urlErr, ok := err.(*url.Error); ok {
@@ -219,6 +224,8 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	if o.elasticSearch != nil {
 		o.elasticSearch.ResponseAnalyze(request, resp, start, stop)
 	}
+	//fmt.Println(timedelta.Nanoseconds() / 1e6)
+	//log.Println(timedelta)
 }
 
 func SetHeader(request *http.Request, name string, value string) {
