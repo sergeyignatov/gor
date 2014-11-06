@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -108,6 +109,7 @@ func (o *HTTPOutput) WorkerMaster() {
 	for {
 		new_workers := <-o.needWorker
 		for i := 0; i < new_workers; i++ {
+			log.Println("spawn worker", i)
 			go o.Worker()
 		}
 
@@ -119,8 +121,10 @@ func (o *HTTPOutput) WorkerMaster() {
 }
 
 func (o *HTTPOutput) Worker() {
+	tr := &http.Transport{DisableKeepAlives: false}
 	client := &http.Client{
 		CheckRedirect: customCheckRedirect,
+		Transport:     tr,
 	}
 
 	death_count := 0
@@ -206,7 +210,8 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	start := time.Now()
 	resp, err := client.Do(request)
 	stop := time.Now()
-	o.queueALStats.Write(int(stop.Sub(start) / 1e3))
+	elapsed := time.Since(start)
+	o.queueALStats.Write(int(elapsed / 1e3))
 
 	// We should not count Redirect as errors
 	if urlErr, ok := err.(*url.Error); ok {
@@ -217,6 +222,8 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 
 	if err == nil {
 		defer resp.Body.Close()
+		_, _ = ioutil.ReadAll(resp.Body)
+
 	} else {
 		log.Println("Request error:", err)
 	}
