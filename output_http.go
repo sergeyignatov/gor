@@ -109,7 +109,6 @@ func (o *HTTPOutput) WorkerMaster() {
 	for {
 		new_workers := <-o.needWorker
 		for i := 0; i < new_workers; i++ {
-			log.Println("spawn worker", i)
 			go o.Worker()
 		}
 
