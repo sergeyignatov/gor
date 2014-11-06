@@ -210,7 +210,6 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	resp, err := client.Do(request)
 	stop := time.Now()
 	elapsed := time.Since(start)
-	o.queueALStats.Write(int(elapsed / 1e3))
 
 	// We should not count Redirect as errors
 	if urlErr, ok := err.(*url.Error); ok {
@@ -220,6 +219,7 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	}
 
 	if err == nil {
+		o.queueALStats.Write(int(elapsed / 1e3))
 		defer resp.Body.Close()
 		_, _ = ioutil.ReadAll(resp.Body)
 
