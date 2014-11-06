@@ -28,14 +28,16 @@ func NewALStat() (s *ALStat) {
 	s.count = 0
 
 	if Settings.stats {
-		log.Println("latest mean min max count/second")
+		if !Settings.rawstat {
+			log.Println("latest mean min max count/second")
+		}
 		go s.reportStats()
 	}
 	return
 }
 
 func (s *ALStat) Write(latest int) {
-	if Settings.stats {
+	if Settings.stats && !Settings.rawstat {
 		if latest > s.max {
 			s.max = latest
 		}
@@ -47,6 +49,9 @@ func (s *ALStat) Write(latest int) {
 		}
 		s.latest = latest
 		s.count = s.count + 1
+	}
+	if Settings.rawstat {
+		fmt.Println(latest)
 	}
 }
 
