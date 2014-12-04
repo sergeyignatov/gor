@@ -219,9 +219,10 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	}
 
 	if err == nil {
-		o.queueALStats.Write(int32(start.Unix()), int(elapsed / 1e3))
+		//o.queueALStats.Write(start.UnixNano()/int64(time.Millisecond), int(elapsed/1e3), request.URL.String())
 		defer resp.Body.Close()
-		_, _ = ioutil.ReadAll(resp.Body)
+		body, _ := ioutil.ReadAll(resp.Body)
+		o.queueALStats.Write(start.UnixNano()/int64(time.Millisecond), int(elapsed/1e3), request.URL.String(), len(string(body)), resp.StatusCode)
 
 	} else {
 		log.Println("Request error:", err)

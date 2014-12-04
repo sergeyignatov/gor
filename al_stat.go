@@ -36,8 +36,8 @@ func NewALStat() (s *ALStat) {
 	return
 }
 
-func (s *ALStat) Write(start int32, latest int) {
-	if Settings.stats && !Settings.rawstat {
+func (s *ALStat) Write(start int64, latest int, url string, length int, status int) {
+	if Settings.stats && !Settings.rawstat && !Settings.jtl {
 		if latest > s.max {
 			s.max = latest
 		}
@@ -53,8 +53,8 @@ func (s *ALStat) Write(start int32, latest int) {
 	if Settings.rawstat {
 		fmt.Println(latest)
 	} else if Settings.jtl {
-		//timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,bytes,URL,Latency
-		fmt.Printf("%d,%d,test,200,OK,test,true,100,/,%d\n", start, latest, latest)
+		//fmt.Printf("<httpSample t=\"%d\" lt=\"%d\" ts=\"%d\" s=\"true\" lb=\"gor\" rc=\"200\" rm=\"OK\" tn=\"Thread Group 1-1\" dt=\"text\" by=\"391905\" ng=\"1\" na=\"1\"/>\n", latest, latest, start)
+		fmt.Printf("%d,%d,test,%d,OK,test,true,%d,%s,%d\n", start, latest, status, length, url, latest)
 	}
 
 }
