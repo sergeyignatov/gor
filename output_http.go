@@ -219,7 +219,7 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	}
 
 	if err == nil {
-		o.queueALStats.Write(int(elapsed / 1e3))
+		o.queueALStats.Write(int32(start.Unix()), int(elapsed / 1e3))
 		defer resp.Body.Close()
 		_, _ = ioutil.ReadAll(resp.Body)
 

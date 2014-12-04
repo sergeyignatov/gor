@@ -36,7 +36,7 @@ func NewALStat() (s *ALStat) {
 	return
 }
 
-func (s *ALStat) Write(latest int) {
+func (s *ALStat) Write(start int32, latest int) {
 	if Settings.stats && !Settings.rawstat {
 		if latest > s.max {
 			s.max = latest
@@ -52,7 +52,11 @@ func (s *ALStat) Write(latest int) {
 	}
 	if Settings.rawstat {
 		fmt.Println(latest)
+	} else if Settings.jtl {
+		//timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,bytes,URL,Latency
+		fmt.Printf("%d,%d,test,200,OK,test,true,100,/,%d\n", start, latest, latest)
 	}
+
 }
 
 func (s *ALStat) Reset() {

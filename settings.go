@@ -16,6 +16,7 @@ type AppSettings struct {
 	stats       bool
 	rawstat     bool
 	splitOutput bool
+	jtl         bool
 
 	inputDummy  MultiOption
 	outputDummy MultiOption
@@ -56,6 +57,8 @@ func init() {
 	flag.BoolVar(&Settings.verbose, "verbose", false, "Turn on verbose/debug output")
 	flag.BoolVar(&Settings.stats, "stats", false, "Turn on queue stats output")
 	flag.BoolVar(&Settings.rawstat, "rawstat", false, "Turn on rawstat")
+	flag.BoolVar(&Settings.jtl, "jtl", false, "Turn on jmeter")
+
 	flag.BoolVar(&Settings.splitOutput, "split-output", false, "By default each output gets same traffic. If set to `true` it splits traffic equally among all outputs.")
 
 	flag.Var(&Settings.inputDummy, "input-dummy", "Used for testing outputs. Emits 'Get /' request every 1s")
