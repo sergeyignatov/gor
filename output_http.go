@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"crypto/tls"
 	"io"
 	"io/ioutil"
 	"log"
@@ -120,7 +121,7 @@ func (o *HTTPOutput) WorkerMaster() {
 }
 
 func (o *HTTPOutput) Worker() {
-	tr := &http.Transport{DisableKeepAlives: false}
+	tr := &http.Transport{DisableKeepAlives: false, TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 	client := &http.Client{
 		CheckRedirect: customCheckRedirect,
 		Transport:     tr,
