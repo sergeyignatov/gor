@@ -45,6 +45,11 @@ func (i *RAWInput) listen(address string) {
 		m := listener.Receive()
 
 		i.data <- m.Bytes()
+		/*select {
+		case <-stopCh:
+			return
+		default:
+		}*/
 	}
 }
 

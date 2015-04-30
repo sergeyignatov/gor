@@ -41,6 +41,7 @@ type AppSettings struct {
 	outputHTTPElasticSearch     string
 	outputHTTPWorkers           int
 	outputHTTPStats             bool
+	recordTime                  int
 }
 
 var Settings AppSettings = AppSettings{}
@@ -85,6 +86,8 @@ func init() {
 
 	flag.StringVar(&Settings.outputHTTPElasticSearch, "output-http-elasticsearch", "", "Send request and response stats to ElasticSearch:\n\tgor --input-raw :8080 --output-http staging.com --output-http-elasticsearch 'es_host:api_port/index_name'")
 	flag.Var(&Settings.outputHTTPUrlRewrite, "output-http-rewrite-url", "Rewrite the requst url based on a mapping:\n\tgor --input-raw :8080 --output-http staging.com --output-http-rewrite-url /xml_test/interface.php:/api/service.do")
+	flag.IntVar(&Settings.recordTime, "recordtime", -1, "How much time to record traffic, default - inf")
+
 }
 
 func Debug(args ...interface{}) {

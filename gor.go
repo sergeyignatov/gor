@@ -18,6 +18,8 @@ var (
 	memprofile = flag.String("memprofile", "", "write memory profile to this file")
 )
 
+//var stopCh chan bool
+
 func main() {
 	// Don't exit on panic
 	defer func() {
@@ -32,7 +34,7 @@ func main() {
 
 	flag.Parse()
 	InitPlugins()
-
+	quit := make(chan int)
 	if len(Plugins.Inputs) == 0 || len(Plugins.Outputs) == 0 {
 		log.Fatal("Required at least 1 input and 1 output")
 	}
@@ -44,8 +46,16 @@ func main() {
 	if *cpuprofile != "" {
 		profileCPU(*cpuprofile)
 	}
+	if Settings.recordTime > 0 {
 
-	Start(nil)
+		go func() {
+			time.Sleep(time.Duration(Settings.recordTime) * time.Second)
+			close(quit)
+		}()
+		Start(quit)
+	} else {
+		Start(nil)
+	}
 }
 
 func profileCPU(cpuprofile string) {
